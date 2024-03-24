@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TodoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [TodoController::class, 'todo']);
+
+Route::post('/savetask', [TodoController::class, 'todoValid']);
+
+Route::get('/edit-todo-{id}',[TodoController::class, 'editTodo']);
+
+Route::post('/edittodovalid', [TodoController::class, 'edittodovalid']);
+
+Route::get('/delete-todo-{id}', [TodoController::class, 'delTodo']);
+
+Route::get('/completed-todo-{id}',[TodoController::class, 'todoCompleted']);
