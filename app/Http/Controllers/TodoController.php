@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Todo;
+use App\Mail\MyTestEmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use App\Events\TodoDeleted;
+
 
 class TodoController extends Controller
 {
     //Show the index page
     public function todo()
     {
-        $TodoData = Todo::paginate(7);
-        return view('main', ['TodoData' => $TodoData]);
+        try {
+            $TodoData = Todo::paginate(7);
+            return view('main', ['TodoData' => $TodoData]);
+        } catch (Exception $e) {
+            return back()->with('Error', 'Failed to load page' . $e->getMessage());
+        }
     }
 
 
@@ -27,9 +36,11 @@ class TodoController extends Controller
 
         ]);
         if ($validateTodo) {
-
+            $description = $request->description;
             $todo = new todo();
-            $todo->description = $request->description;
+            $todo->description = $request->description;   //INSERT QUERY
+            Mail::to('stark8945@gmail.com')->send(new MyTestEmail($description));
+
             try {
                 $todo->save();
                 return Redirect::to('/')->with('Success', 'Task created successfully');
@@ -81,8 +92,10 @@ class TodoController extends Controller
     {
 
         $id = $request->id;
+        event(new TodoDeleted($id));
         $todo = todo::where('id', '=', $id)->first();
         $todo->description = $request->description;
+
         try {
             $todo->delete();
             return Redirect::to('/')->with('Success', 'TODO deleted successfully');
@@ -94,8 +107,8 @@ class TodoController extends Controller
     // Update status of the task
     public function todoCompleted(Request $request)
     {
-       todo::where('id', '=', $request->id)->update(['status' => 'Completed']);
-        return redirect ('/');
+        todo::where('id', '=', $request->id)->update(['status' => 'Completed']);
+        return redirect('/');
     }
 }
 

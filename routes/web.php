@@ -1,5 +1,8 @@
 <?php
 
+use App\Mail\MyTestEmail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
 
@@ -16,12 +19,15 @@ use App\Http\Controllers\TodoController;
 
 Route::get('/', [TodoController::class, 'todo']);
 
-Route::post('/savetask', [TodoController::class, 'todoValid']);
+Route::post('/savetask', [TodoController::class, 'todoValid'])->middleware('auth');
 
-Route::get('/edit-todo-{id}',[TodoController::class, 'editTodo']);
+Route::get('/edit-todo-{id}', [TodoController::class, 'editTodo'])->middleware('auth');
 
-Route::post('/edittodovalid', [TodoController::class, 'edittodovalid']);
+Route::post('/edittodovalid', [TodoController::class, 'edittodovalid'])->middleware('auth');
 
-Route::get('/delete-todo-{id}', [TodoController::class, 'delTodo']);
+Route::get('/delete-todo-{id}', [TodoController::class, 'delTodo'])->middleware('auth');
 
-Route::get('/completed-todo-{id}',[TodoController::class, 'todoCompleted']);
+Route::get('/completed-todo-{id}', [TodoController::class, 'todoCompleted'])->middleware('auth');
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

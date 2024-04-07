@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Todo;
+use App\Events\TodoDeleted;
+use App\Observers\TodoObserver;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use App\Listeners\SendDeleteNotification;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,7 +20,10 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         Registered::class => [
-            SendEmailVerificationNotification::class,
+            SendEmailVerificationNotification::class,   
+        ],
+        TodoDeleted::class =>[
+            SendDeleteNotification::class
         ],
     ];
 
@@ -27,7 +34,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Todo::observe(TodoObserver::class);
     }
 
     /**
