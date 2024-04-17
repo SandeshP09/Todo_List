@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Todo;
 use App\Mail\MyTestEmail;
+use App\Jobs\SendEmailJob;
+use App\Events\TodoDeleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
-use App\Events\TodoDeleted;
 
 
 class TodoController extends Controller
@@ -17,7 +18,7 @@ class TodoController extends Controller
     public function todo()
     {
         try {
-            $TodoData = Todo::paginate(7);
+            $TodoData = Todo::paginate(9);
             return view('main', ['TodoData' => $TodoData]);
         } catch (Exception $e) {
             return back()->with('Error', 'Failed to load page' . $e->getMessage());
@@ -39,7 +40,8 @@ class TodoController extends Controller
             $description = $request->description;
             $todo = new todo();
             $todo->description = $request->description;   //INSERT QUERY
-            Mail::to('stark8945@gmail.com')->send(new MyTestEmail($description));
+            // Mail::to('stark8945@gmail.com')->send(new MyTestEmail($description));
+            // dispatch(new SendEmailJob($description));
 
             try {
                 $todo->save();
@@ -92,7 +94,8 @@ class TodoController extends Controller
     {
 
         $id = $request->id;
-        event(new TodoDeleted($id));
+        $description =$request->description;
+        event(new TodoDeleted($id, $description));
         $todo = todo::where('id', '=', $id)->first();
         $todo->description = $request->description;
 

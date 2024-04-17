@@ -14,15 +14,16 @@ class TodoDeleted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $id;
+    public $id, $description;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($id)
+    public function __construct($id, $description)
     {
         $this->id = $id;
+        $this->description=$description;
         //
     }
 
