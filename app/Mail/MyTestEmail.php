@@ -44,7 +44,7 @@ class MyTestEmail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'mail.test-email',
+            view: 'mail.delete-email',
             with:['description'=>$this->description]
         );
     }
